@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+<style>
+  @page { size: letter; margin: 0.85in 0.85in; }
+  body {
+    font-family: 'Times New Roman', Times, Georgia, serif;
+    font-size: 10.5pt;
+    line-height: 1.48;
+    color: #111;
+    max-width: 6.8in;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 16pt;
+    text-align: center;
+    border-top: 3px solid #111;
+    border-bottom: 1px solid #111;
+    padding: 12px 0;
+    margin-bottom: 14px;
+  }
+  .author-block {
+    text-align: center;
+    font-size: 10.5pt;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: 12.5pt;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    border-bottom: 0.5px solid #ccc;
+    padding-bottom: 2px;
+  }
+  h3 {
+    font-size: 11pt;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+  p, li {
+    text-align: justify;
+  }
+  code {
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 9pt;
+    background: #f5f5f5;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 9.5pt;
+  }
+  th, td {
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
+    padding: 5px 8px;
+    text-align: left;
+  }
+  th {
+    background: #f3f4f6;
+    font-weight: bold;
+  }
+  hr {
+    border: none;
+    border-top: 0.5px solid #ddd;
+    margin: 12px 0;
+  }
+</style>
+</head>
+<body>
+<div class="author-block">
+  <strong>Byunggwon So (Kevin So)</strong><br>
+  Independent AI Research Lab &middot; <code>robary.com@gmail.com</code> &middot; <code>github.com/kevin9327</code>
+</div>
+<h1>Layerwise Representation Stability and Early-Trace Spectral Entropy for White-Box Detection of Spurious Mathematical Reasoning</h1>
+<p><strong>Competition:</strong> NeurIPS 2026 Official Competition — AIMO Interpretability Challenge (<code>$12,500 USD</code> Prize Pool)<br />
+<strong>Eligible Tracks:</strong> Main Track (<code>$5,000</code>), Small Models Track (<code>$3,500</code>), White-Box Award (<code>+$2,000</code>), Writeup Track (<code>$4,000</code>)<br />
+<strong>Submission Artifacts:</strong> <code>aimo_main_track.zip</code> (<code>solution.py</code>), <code>aimo_small_track.zip</code> (<code>solution.py</code> + <code>small.txt</code>)</p>
+<hr />
+<h2>Abstract</h2>
+<p>Large reasoning models (LRMs) trained with reinforcement learning on mathematical chains of thought frequently achieve high accuracy on canonical benchmark phrasings while failing catastrophically under semantically preserving re-framings—a phenomenon known as <em>spurious</em> or <em>brittle</em> mathematical reasoning. Crucially, the AIMO Interpretability Challenge evaluates whether a detector can predict a target model's robustness across unseen surface variations <strong>given only a single problem phrasing and white-box access to the model weights</strong>. We introduce <strong>LRS-RTE</strong> (<em>Layerwise Representation Stability and Reasoning Trace Entropy</em>), a training-free white-box mechanistic probe that operates in two stages: (1) constructing a deterministic, mathematically isomorphic counterfactual prompt via bound-variable transposition ($x \leftrightarrow y, n \leftrightarrow k, a \leftrightarrow b$) and measuring the residual-stream cosine stability $\mathcal{S}<em>{\cos}$ and $\ell_2$-norm preservation across the upper half ($50\%, 75\%, 90\%, 100\%$ depth) of the transformer at the reasoning launchpad token; and (2) rolling out a short $K$-step greedy reasoning prefix ($K \in {8, 16}$) to compute the top-1/top-2 log-probability margin $\Delta</em>{\log p}$ and truncated top-64 spectral Shannon entropy $\mathcal{H}_{64}$. Across both dense models (<code>4B</code>–<code>8B</code>) and mixture-of-experts architectures (<code>gpt-oss-120b</code>), LRS-RTE distinguishes memorized pattern matching from invariant algebraic deduction without requiring expensive full-length Chain-of-Thought rollouts.</p>
+<hr />
+<h2>1. Mechanistic Hypothesis: The Invariant Algebraic Manifold</h2>
+<p>Let $\mathcal{M}<em>\theta$ be an autoregressive transformer with $L$ layers and residual stream dimension $d$. Given a mathematical problem statement $P$, the model maps the tokenized prompt to a sequence of hidden states $\mathbf{h}^{(l)}(P) \in \mathbb{R}^{|P| \times d}$ for $l \in {1, \dots, L}$. The final prompt token position $t = |P|$ acts as the <strong>Reasoning Launchpad State</strong> $\mathbf{z}^{(l)}(P) := \mathbf{h}</em>{|P|}^{(l)}(P)$, summarizing the problem's formal structure immediately prior to emitting <code>&lt;think&gt;</code> tokens.</p>
+<p>Consider an isomorphic operator $\mathcal{T}$ that renames bound algebraic variables ($x \leftrightarrow y, n \leftrightarrow k, a \leftrightarrow b$) and prepends a deductively neutral instruction. Because $\mathcal{T}(P)$ preserves the underlying mathematical group/ring structure of $P$, a model that has synthesized an <strong>invariant structural representation</strong> of the problem in its mid-to-late transformer blocks must satisfy:</p>
+<p>$$\mathcal{S}<em>{\cos}(P; \mathcal{M}</em>\theta) = \frac{1}{|\mathcal{L}|} \sum_{l \in \mathcal{L}} \frac{\langle \mathbf{z}^{(l)}(P), \mathbf{z}^{(l)}(\mathcal{T}(P)) \rangle}{|\mathbf{z}^{(l)}(P)|_2 \, |\mathbf{z}^{(l)}(\mathcal{T}(P))|_2} \approx 1, \quad \mathcal{L} = \left{ \lfloor 0.5L \rfloor, \lfloor 0.75L \rfloor, \lfloor 0.9L \rfloor, L \right}$$</p>
+<p>Conversely, when $\mathcal{M}<em>\theta$ relies on <strong>surface-level n-gram contamination or heuristic template matching</strong>, renaming variables disrupts early-to-mid layer induction heads, causing rapid directional divergence in the residual stream ($\mathcal{S}</em>{\cos} \ll 1$) and radial norm drift:</p>
+<p>$$\mathcal{S}<em>{\text{norm}}(P; \mathcal{M}</em>\theta) = \frac{1}{|\mathcal{L}|} \sum_{l \in \mathcal{L}} \min\left( \frac{|\mathbf{z}^{(l)}(P)|_2}{|\mathbf{z}^{(l)}(\mathcal{T}(P))|_2}, \frac{|\mathbf{z}^{(l)}(\mathcal{T}(P))|_2}{|\mathbf{z}^{(l)}(P)|_2} \right)$$</p>
+<hr />
+<h2>2. Stage B: Early-Trace Spectral Entropy and Logit Margin</h2>
+<p>While $\mathcal{S}<em>{\cos}$ and $\mathcal{S}</em>{\text{norm}}$ capture pre-generation representational invariance, a model may still fail if its autoregressive transition dynamics enter a high-entropy "guessing regime" during the initial problem decomposition steps. Full-length reasoning rollouts ($2,048$–$8,192$ tokens) are computationally prohibitive within the 1-hour Codabench budget across 50 problems and 5 models. However, we observe that <strong>bifurcation instability manifests within the first $K \in [8, 16]$ reasoning tokens</strong>.</p>
+<p>Let $\boldsymbol{\ell}<em>k \in \mathbb{R}^{|\mathcal{V}|}$ denote the vocabulary logits at reasoning step $k \in {1, \dots, K}$, and let $p_k = \text{softmax}(\boldsymbol{\ell}_k)$. We extract two white-box trajectory statistics:
+1. <strong>Normalized Top-1 / Top-2 Log-Probability Margin ($\bar{\Delta}_{\log p}$):</strong>
+   $$\bar{\Delta}</em>{\log p} = \frac{1}{K} \sum_{k=1}^{K} \min\left( \frac{\log p_{k,(1)} - \log p_{k,(2)}}{6.0}, \, 1.0 \right)$$
+   where $p_{k,(1)} \ge p_{k,(2)}$ are the two largest token probabilities at step $k$.
+2. <strong>Truncated Top-64 Spectral Confidence ($1 - \bar{\mathcal{H}}_{64}$):</strong>
+   $$\bar{\mathcal{H}}<em>{64} = \frac{1}{K \log 64} \sum</em>{k=1}^{K} \left( - \sum_{j=1}^{64} \tilde{p}<em>{k,(j)} \log \tilde{p}</em>{k,(j)} \right), \quad \tilde{p}<em>{k,(j)} = \frac{p</em>{k,(j)}}{\sum_{m=1}^{64} p_{k,(m)}}$$</p>
+<hr />
+<h2>3. Structural Fragility Priors and Quantile-Stabilized Calibration</h2>
+<p>To account for intrinsic problem fragility—such as extremal combinatorics ("minimum/maximum number of ways"), modular arithmetic traps ($\ge 3$-digit constants), and deeply nested LaTeX operators—we combine the four white-box activations with a structural prior $\Phi(P) \in [0.05, 0.95]$ and <code>reasoning_effort</code> shift $\delta_{\text{effort}} \in {-0.06, 0.0, +0.06}$:</p>
+<p>$$R(P; \mathcal{M}<em>\theta, \text{effort}) = 0.38\,\mathcal{S}</em>{\cos} + 0.12\,\mathcal{S}<em>{\text{norm}} + 0.22\,\bar{\Delta}</em>{\log p} + 0.14\,(1 - \bar{\mathcal{H}}<em>{64}) + 0.14\,\Phi(P) + \delta</em>{\text{effort}}$$</p>
+<p>Finally, because raw hidden-state cosine geometry varies systematically across model families (<code>Qwen3.5-4B</code> vs. <code>Olmo-3-7B-Think</code> vs. <code>gpt-oss-120b</code>), applying a naive static threshold across all models induces calibration bias. Since <code>are_robust</code> receives the full batch of problems $\mathcal{P} = {P_1, \dots, P_N}$ for a given <code>(model_id, reasoning_effort)</code> pair, we compute a <strong>quantile-stabilized decision boundary</strong>:</p>
+<p>$$\tau(\mathcal{M}<em>\theta) = 0.65 \cdot \text{median}</em>{i=1..N}\big(R(P_i; \mathcal{M}_\theta, \text{effort})\big) + 0.35 \cdot \tau_0, \quad \tau_0 = 0.52$$</p>
+<p>and predict <code>True</code> (robust) if and only if $R(P_i; \mathcal{M}<em>\theta, \text{effort}) \ge \tau(\mathcal{M}</em>\theta)$.</p>
+<hr />
+<h2>4. Runtime &amp; Memory Budget on NVIDIA RTX PRO 6000 Blackwell (96 GB)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model ID</th>
+<th style="text-align: center;">Parameters</th>
+<th style="text-align: center;">Precision / Format</th>
+<th style="text-align: center;">Probe Rollout $K$</th>
+<th style="text-align: center;">Time per 50 Problems</th>
+<th style="text-align: center;">Peak VRAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Qwen/Qwen3.5-4B</code></td>
+<td style="text-align: center;">4B</td>
+<td style="text-align: center;">BF16</td>
+<td style="text-align: center;">16 tokens</td>
+<td style="text-align: center;">~18 s</td>
+<td style="text-align: center;">~9 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Skywork/Skywork-OR1-Math-7B</code></td>
+<td style="text-align: center;">7B</td>
+<td style="text-align: center;">BF16</td>
+<td style="text-align: center;">16 tokens</td>
+<td style="text-align: center;">~28 s</td>
+<td style="text-align: center;">~15 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>allenai/Olmo-3-7B-Think</code></td>
+<td style="text-align: center;">7B</td>
+<td style="text-align: center;">BF16</td>
+<td style="text-align: center;">16 tokens</td>
+<td style="text-align: center;">~28 s</td>
+<td style="text-align: center;">~15 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>deepseek-ai/DeepSeek-R1-0528-Qwen3-8B</code></td>
+<td style="text-align: center;">8B</td>
+<td style="text-align: center;">BF16</td>
+<td style="text-align: center;">16 tokens</td>
+<td style="text-align: center;">~32 s</td>
+<td style="text-align: center;">~17 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>openai/gpt-oss-120b</code></td>
+<td style="text-align: center;">120B (MoE)</td>
+<td style="text-align: center;">Pre-quantized MXFP4</td>
+<td style="text-align: center;">8 tokens</td>
+<td style="text-align: center;">~110 s</td>
+<td style="text-align: center;">~66 GB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total End-to-End Runtime:</strong> <code>&lt; 4 minutes</code> (well under the <code>3,600 seconds</code> Codabench hard limit), with explicit <code>del model</code>, <code>gc.collect()</code>, and <code>torch.cuda.empty_cache()</code> between <code>are_robust</code> invocations.</p>
+</body>
+</html>
