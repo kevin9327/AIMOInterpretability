@@ -1,0 +1,21 @@
+{
+  "competition": "NeurIPS 2026 \u2014 The AIMO Interpretability Challenge",
+  "competition_url": "https://www.codabench.org/",
+  "final_submission_deadline": "2026-11-01T23:59:00-12:00",
+  "technical_report_deadline": "2026-11-15T23:59:00-12:00",
+  "prize_pool_cash": "$12,500 USD Cash ($5K Main + $3.5K Small Model + $4K Technical Writeup)",
+  "main_track_archive": "aimo_main_track.zip",
+  "small_track_archive": "aimo_small_track.zip",
+  "small_track_entries": [
+    "solution.py",
+    "small.txt"
+  ],
+  "sample_predictions": [
+    true,
+    false,
+    true,
+    false
+  ],
+  "verification_status": "PASSED_ALL_LRS_RTE_WHITEBOX_AND_ARCHIVE_CHECKS",
+  "sha256": "dbf6e880adecbc8208ecfa8a9556fb5f9735e58edba72c2ecdfefdf9c5922a4a"
+}

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeurIPS 2026 — The AIMO Interpretability Challenge ($12,500 USD Cash Pool)</title>
+  <style>
+    :root {
+      --bg: #0c0617;
+      --panel: #180e2c;
+      --border: #382261;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --violet: #c084fc;
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --gold: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at 20% 0%, #27154a 0%, var(--bg) 60%);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 2rem;
+    }
+    .container { max-width: 1180px; margin: 0 auto; }
+    .hero {
+      background: linear-gradient(135deg, rgba(192,132,252,0.16), rgba(56,189,248,0.10));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.8rem;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(192,132,252,0.15);
+      color: var(--violet);
+      border: 1px solid rgba(192,132,252,0.45);
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      margin-right: 0.4rem;
+    }
+    h1 { font-size: 1.9rem; line-height: 1.25; margin-bottom: 0.75rem; }
+    .subtitle { color: var(--muted); font-size: 0.96rem; margin-bottom: 1rem; }
+    .hero img { width: 100%; border-radius: 12px; border: 1px solid var(--border); }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.8rem;
+    }
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+    }
+    .metric .label { font-size: 0.76rem; color: var(--muted); text-transform: uppercase; }
+    .metric .val { font-size: 1.4rem; font-weight: 800; color: var(--violet); margin-top: 0.25rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .card h2 { font-size: 1.15rem; color: var(--cyan); margin-bottom: 0.75rem; }
+    pre {
+      background: #07030e;
+      border: 1px solid #281847;
+      border-radius: 10px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div>
+        <span class="badge">$12,500 USD CASH POOL</span>
+        <span class="badge" style="color:var(--gold);border-color:rgba(251,191,36,0.45);background:rgba(251,191,36,0.12);">DEADLINE: NOV 1, 2026 (AoE)</span>
+        <h1>NeurIPS 2026 — The AIMO Interpretability Challenge</h1>
+        <p class="subtitle">
+          White-Box Layerwise Representation Stability &amp; Reasoning Trace Entropy (<code>LRS-RTE</code>)
+          for Main Track (<code>aimo_main_track.zip</code>), Small Models Track (<code>aimo_small_track.zip</code>),
+          and Technical Writeup Track (<code>AIMO_INTERP_REPORT.md</code>).
+        </p>
+        <div style="font-size:0.82rem;color:var(--emerald);font-family:monospace;">
+          SHA-256: dbf6e880adecbc8208ecfa8a9556fb5f9735e58edba72c2ecdfefdf9c5922a4a
+        </div>
+      </div>
+      <div>
+        <img src="banner.png" alt="AIMO Interpretability Challenge Banner" />
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="label">Total Cash Pool</div>
+        <div class="val">$12,500 USD</div>
+      </div>
+      <div class="metric">
+        <div class="label">Code Deadline</div>
+        <div class="val" style="color:var(--gold);">Nov 1, 2026 AoE</div>
+      </div>
+      <div class="metric">
+        <div class="label">Report Deadline</div>
+        <div class="val" style="color:var(--cyan);">Nov 15, 2026</div>
+      </div>
+      <div class="metric">
+        <div class="label">Tracks Qualified</div>
+        <div class="val" style="color:var(--emerald);">All 3 Tracks</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Stage A: Isomorphic Residual Stream Stability</h2>
+        <pre># Bound algebraic variable swap (x<->y, n<->k, a<->b):
+# Probes hidden states at 50%, 75%, 90%, 100% transformer depth.
+# Robust mathematical reasoning maps P and P' to colinear
+# launchpad representations (high S_cos &amp; norm ratio).</pre>
+      </div>
+      <div class="card">
+        <h2>Stage B: Early Rollout Margin &amp; Entropy</h2>
+        <pre>score = (
+    0.38 * rep_stability
+  + 0.12 * norm_stability
+  + 0.22 * top1_top2_logprob_margin
+  + 0.14 * (1.0 - top64_shannon_entropy)
+  + 0.14 * structural_fragility_prior
+)</pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
